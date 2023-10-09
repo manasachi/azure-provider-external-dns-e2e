@@ -12,8 +12,8 @@ import (
 
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	"github.com/Azure/azure-provider-external-dns-e2e/pkg/config"
-	"github.com/Azure/azure-provider-external-dns-e2e/pkg/controller"
+	pkgResources "github.com/Azure/azure-provider-external-dns-e2e/testing/e2e/pkgResources/config"
+	"github.com/Azure/azure-provider-external-dns-e2e/testing/e2e/pkgResources/controller"
 )
 
 func main() {
@@ -27,11 +27,11 @@ func main() {
 }
 
 func run() error {
-	if err := config.Flags.Validate(); err != nil {
+	if err := pkgResources.Flags.Validate(); err != nil {
 		return err
 	}
 
-	mgr, err := controller.NewManager(config.Flags)
+	mgr, err := controller.NewManager(pkgResources.Flags)
 	if err != nil {
 		return err
 	}

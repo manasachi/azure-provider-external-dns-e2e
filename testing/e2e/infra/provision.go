@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/Azure/azure-provider-external-dns-e2e/testing/e2e/clients"
-
 	"github.com/Azure/azure-provider-external-dns-e2e/testing/e2e/logger"
 	"golang.org/x/sync/errgroup"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/client-go/rest"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -87,17 +87,19 @@ func (i *infra) Provision(ctx context.Context, tenantId, subscriptionId string) 
 	}
 
 	resEg.Go(func() error {
-		deployExternalDNS(clusterID)
+		deployExternalDNS(ctx, ret)
 		if err != nil {
 			return logger.Error(lgr, fmt.Errorf("error deploying external dns onto cluster %w", err))
 		}
 		return nil
 	})
 
+	if err := resEg.Wait(); err != nil {
+		return Provisioned{}, logger.Error(lgr, err)
+	}
+
 	return ret, nil
 } //END OF PROVISION
-
-//deploying external dns -- pass in cluster uid for conf?
 
 func (is infras) Provision(tenantId, subscriptionId string) ([]Provisioned, error) {
 	lgr := logger.FromContext(context.Background())
@@ -134,9 +136,33 @@ func (is infras) Provision(tenantId, subscriptionId string) ([]Provisioned, erro
 
 var restConfig *rest.Config
 
-func deployExternalDNS(clusterId string) error {
+func deployExternalDNS(ctx context.Context, p Provisioned) error {
+
+	lgr := logger.FromContext(ctx).With("infra", p.Name)
+	lgr.Info("deploying external DNS onto cluster")
+	defer lgr.Info("finished deploying ext DNS")
 
 	fmt.Println("In deploy external dns >>>>>>>>>>>>>>>>>>>>")
+
+	exConfig := manifests.getExampleConfigs()[0]
+
+	//objs := ExternalDnsResources(exConfig.Conf, exConfig.Deploy, exConfig.DnsConfigs)
+
+	_, dnsCmHash := manifests.newExternalDNSConfigMap(exConfig.Conf, exConfig.DnsConfigs[0])
+
+	deployment := manifests.newExternalDNSDeployment(exConfig.Conf, exConfig.DnsConfigs[0], dnsCmHash)
+
+	fmt.Println("===================================================")
+	//lgr.Info("objs: %w", objs)
+
+	var objs []client.Object
+	objs = append(objs, deployment)
+	if err := p.Cluster.Deploy(ctx, objs); err != nil {
+		fmt.Println("ERROR DEPLOYING EXT DNS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+		return logger.Error(lgr, err)
+	}
+	// fixture := path.Join("fixtures", "external_dns", tc.Name) + ".json"
+
 	// m, err := manager.New(restConfig, manager.Options{Metrics: metricsserver.Options{BindAddress: ":0"}})
 	// if err != nil {
 	// 	fmt.Println("error creating new manager for external dns: ", err)

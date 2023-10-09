@@ -22,7 +22,7 @@ func (p Provisioned) Deploy(ctx context.Context) error {
 	// 	return logger.Error(lgr, fmt.Errorf("failed to marshal loadable: %w", err))
 	// }
 
-	//objs := manifests.E2e(p.E2eImage, string(jsonLoadable))
+	// objs := manifests.E2e(p.E2eImage, string(jsonLoadable))
 	// if err := p.Cluster.Clean(ctx, objs); err != nil {
 	// 	return logger.Error(lgr, err)
 	// }
