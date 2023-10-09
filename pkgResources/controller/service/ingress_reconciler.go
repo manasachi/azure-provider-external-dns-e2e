@@ -9,7 +9,7 @@ import (
 
 	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/controller/controllername"
 	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/controller/metrics"
-	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/manifests"
+	manifests "github.com/Azure/azure-provider-external-dns-e2e/pkgResources/pkgManifests"
 	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/util"
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"

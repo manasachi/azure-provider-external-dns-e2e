@@ -1,4 +1,4 @@
-package manifests
+package pkgManifests
 
 import (
 	"context"
@@ -127,7 +127,7 @@ func externalDnsResourcesFromConfig(conf *config.Config, externalDnsConfig *Exte
 	fmt.Println("Appending 3 objs to array  >>>>>>>>>>>>>>>>>>>>>>>>>>")
 	fmt.Println("objs: %w", objs)
 
-	dnsCm, dnsCmHash := newExternalDNSConfigMap(conf, externalDnsConfig)
+	dnsCm, dnsCmHash := NewExternalDNSConfigMap(conf, externalDnsConfig)
 	objs = append(objs, dnsCm)
 	deployment := newExternalDNSDeployment(conf, externalDnsConfig, dnsCmHash)
 	fmt.Println("The deployment returned from fn ----------------------->")
@@ -215,7 +215,7 @@ func newExternalDNSClusterRoleBinding(conf *config.Config, externalDnsConfig *Ex
 	}
 }
 
-func newExternalDNSConfigMap(conf *config.Config, externalDnsConfig *ExternalDnsConfig) (*corev1.ConfigMap, string) {
+func NewExternalDNSConfigMap(conf *config.Config, externalDnsConfig *ExternalDnsConfig) (*corev1.ConfigMap, string) {
 	js, err := json.Marshal(&map[string]interface{}{
 		"tenantId":                    externalDnsConfig.TenantId,
 		"subscriptionId":              externalDnsConfig.Subscription,

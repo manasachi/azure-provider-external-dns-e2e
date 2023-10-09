@@ -7,6 +7,7 @@ import (
 
 	"github.com/Azure/azure-provider-external-dns-e2e/clients"
 	"github.com/Azure/azure-provider-external-dns-e2e/logger"
+	manifests "github.com/Azure/azure-provider-external-dns-e2e/pkgResources/pkgManifests"
 	"golang.org/x/sync/errgroup"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/client-go/rest"
@@ -86,13 +87,13 @@ func (i *infra) Provision(ctx context.Context, tenantId, subscriptionId string) 
 	}
 
 	//Deploy external dns
-	// resEg.Go(func() error {
-	// 	deployExternalDNS(ctx, ret)
-	// 	if err != nil {
-	// 		return logger.Error(lgr, fmt.Errorf("error deploying external dns onto cluster %w", err))
-	// 	}
-	// 	return nil
-	// })
+	resEg.Go(func() error {
+		deployExternalDNS(ctx, ret)
+		if err != nil {
+			return logger.Error(lgr, fmt.Errorf("error deploying external dns onto cluster %w", err))
+		}
+		return nil
+	})
 
 	if err := resEg.Wait(); err != nil {
 		return Provisioned{}, logger.Error(lgr, err)
@@ -136,49 +137,27 @@ func (is infras) Provision(tenantId, subscriptionId string) ([]Provisioned, erro
 
 var restConfig *rest.Config
 
-// func deployExternalDNS(ctx context.Context, p Provisioned) error {
+func deployExternalDNS(ctx context.Context, p Provisioned) error {
 
-// 	lgr := logger.FromContext(ctx).With("infra", p.Name)
-// 	lgr.Info("deploying external DNS onto cluster")
-// 	defer lgr.Info("finished deploying ext DNS")
+	lgr := logger.FromContext(ctx).With("infra", p.Name)
+	lgr.Info("deploying external DNS onto cluster")
+	defer lgr.Info("finished deploying ext DNS")
 
-// 	fmt.Println("In deploy external dns >>>>>>>>>>>>>>>>>>>>")
+	fmt.Println("In deploy external dns >>>>>>>>>>>>>>>>>>>>")
 
-// 	exConfig := manifests.getExampleConfigs()[0]
+	exConfig := manifests.GetExampleConfigs()[0]
+	objs := manifests.ExternalDnsResources(exConfig.Conf, exConfig.Deploy, exConfig.DnsConfigs)
 
-// 	//objs := ExternalDnsResources(exConfig.Conf, exConfig.Deploy, exConfig.DnsConfigs)
+	//_, dnsCmHash := manifests.NewExternalDNSConfigMap(exConfig.Conf, exConfig.DnsConfigs[0])
+	// deployment := manifests.newExternalDNSDeployment(exConfig.Conf, exConfig.DnsConfigs[0], dnsCmHash)
 
-// 	_, dnsCmHash := manifests.newExternalDNSConfigMap(exConfig.Conf, exConfig.DnsConfigs[0])
+	fmt.Println("===================================================")
 
-// 	deployment := manifests.newExternalDNSDeployment(exConfig.Conf, exConfig.DnsConfigs[0], dnsCmHash)
+	if err := p.Cluster.Deploy(ctx, objs); err != nil {
+		fmt.Println("ERROR DEPLOYING EXT DNS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+		return logger.Error(lgr, err)
+	}
 
-// 	fmt.Println("===================================================")
-// 	//lgr.Info("objs: %w", objs)
+	return nil
 
-// 	var objs []client.Object
-// 	objs = append(objs, deployment)
-// 	if err := p.Cluster.Deploy(ctx, objs); err != nil {
-// 		fmt.Println("ERROR DEPLOYING EXT DNS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-// 		return logger.Error(lgr, err)
-// 	}
-// 	// fixture := path.Join("fixtures", "external_dns", tc.Name) + ".json"
-
-// 	// m, err := manager.New(restConfig, manager.Options{Metrics: metricsserver.Options{BindAddress: ":0"}})
-// 	// if err != nil {
-// 	// 	fmt.Println("error creating new manager for external dns: ", err)
-// 	// 	return err
-// 	// }
-
-// 	//replace this with just cluster uid?
-// 	// conf := &config.Config{ClusterUid: clusterId}
-// 	// //conf := &config.Config{NS: "app-routing-system", OperatorDeployment: "operator"}
-
-// 	// err = extDNS.NewExternalDns(m, conf, self)
-// 	// if err != nil {
-// 	// 	fmt.Println("error creating external dns: ", err)
-// 	// 	return err
-// 	// }
-// 	// require.NoError(t, err)
-// 	return nil
-
-// }
+}

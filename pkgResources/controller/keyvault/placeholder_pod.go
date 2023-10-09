@@ -21,7 +21,7 @@ import (
 
 	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/config"
 	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/controller/metrics"
-	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/manifests"
+	manifests "github.com/Azure/azure-provider-external-dns-e2e/pkgResources/pkgManifests"
 	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/util"
 )
 

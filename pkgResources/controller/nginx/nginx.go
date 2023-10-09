@@ -6,7 +6,7 @@ import (
 	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/config"
 	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/controller/ingress"
 	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/controller/service"
-	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/manifests"
+	manifests "github.com/Azure/azure-provider-external-dns-e2e/pkgResources/pkgManifests"
 	appsv1 "k8s.io/api/apps/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

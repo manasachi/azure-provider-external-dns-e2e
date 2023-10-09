@@ -1,7 +1,7 @@
 package dns
 
 import (
-	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/manifests"
+	manifests "github.com/Azure/azure-provider-external-dns-e2e/pkgResources/pkgManifests"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 

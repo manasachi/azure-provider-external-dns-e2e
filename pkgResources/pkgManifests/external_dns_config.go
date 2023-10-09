@@ -1,4 +1,4 @@
-package manifests
+package pkgManifests
 
 import (
 	"time"
@@ -48,8 +48,8 @@ var (
 			Conf: &config.Config{NS: "test-namespace", ClusterUid: clusterUid, DnsSyncInterval: time.Minute * 3},
 			Deploy: &appsv1.Deployment{
 				ObjectMeta: metav1.ObjectMeta{
-					Name: "test-operator-deploy",
-					UID:  "test-operator-deploy-uid",
+					Name: "test-externalDNS-deploy",
+					UID:  "test-externalDNS-deploy-uid",
 				},
 			},
 			DnsConfigs: []*ExternalDnsConfig{publicDnsConfig, privateDnsConfig},
@@ -84,7 +84,7 @@ var (
 	}
 )
 
-func getExampleConfigs() []configStruct {
+func GetExampleConfigs() []configStruct {
 
 	return exampleConfigs
 
