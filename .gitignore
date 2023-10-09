@@ -29,3 +29,7 @@ coverage.out
 *.xml
 
 .env
+
+
+infra-config.json
+job-app-routing-operator-e2e.log
