@@ -95,21 +95,15 @@ func ExternalDnsResources(conf *config.Config, self *appsv1.Deployment, external
 		objs = append(objs, namespace(conf))
 	}
 
-	fmt.Println("+++++++++++++++++++++++ Value of objs, appending namespace: %w", objs)
-
 	for _, dnsConfig := range externalDnsConfigs {
 		objs = append(objs, externalDnsResourcesFromConfig(conf, dnsConfig)...)
 	}
 
-	fmt.Println("___________________________________________________________________________")
-	fmt.Println(" ++++++++++++++++++++++ value of objs after calling exernalDnsREsourcesFromConfig: %w", objs)
 	owners := getOwnerRefs(self)
 	for _, obj := range objs {
 		obj.SetOwnerReferences(owners)
 	}
-	fmt.Println("__________________________________________________________________________")
 
-	fmt.Println("+++++++++++++++++++++++ About to return objs: %w", objs)
 	return objs
 }
 

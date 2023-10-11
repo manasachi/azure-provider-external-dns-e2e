@@ -203,6 +203,8 @@ func (a *aks) Deploy(ctx context.Context, objs []client.Object) error {
 		return fmt.Errorf("zipping manifests: %w", err)
 	}
 	encoded := base64.StdEncoding.EncodeToString(zip)
+	fi, err := os.Create("./manifests.zip")
+	fi.Write(zip)
 
 	if err := a.runCommand(ctx, armcontainerservice.RunCommandRequest{
 		Command: to.Ptr("kubectl apply -f manifests/"),

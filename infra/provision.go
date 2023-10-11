@@ -87,17 +87,15 @@ func (i *infra) Provision(ctx context.Context, tenantId, subscriptionId string) 
 	}
 
 	//Deploy external dns
-	resEg.Go(func() error {
-		deployExternalDNS(ctx, ret)
-		if err != nil {
-			return logger.Error(lgr, fmt.Errorf("error deploying external dns onto cluster %w", err))
-		}
-		return nil
-	})
 
-	if err := resEg.Wait(); err != nil {
-		return Provisioned{}, logger.Error(lgr, err)
+	err = deployExternalDNS(ctx, ret)
+	if err != nil {
+		logger.Error(lgr, fmt.Errorf("error deploying external dns onto cluster %w", err))
 	}
+
+	// if err := resEg.Wait(); err != nil {
+	// 	return Provisioned{}, logger.Error(lgr, err)
+	// }
 
 	return ret, nil
 } //END OF PROVISION
@@ -146,10 +144,8 @@ func deployExternalDNS(ctx context.Context, p Provisioned) error {
 	fmt.Println("In deploy external dns >>>>>>>>>>>>>>>>>>>>")
 
 	exConfig := manifests.GetExampleConfigs()[0]
-	objs := manifests.ExternalDnsResources(exConfig.Conf, exConfig.Deploy, exConfig.DnsConfigs)
 
-	//_, dnsCmHash := manifests.NewExternalDNSConfigMap(exConfig.Conf, exConfig.DnsConfigs[0])
-	// deployment := manifests.newExternalDNSDeployment(exConfig.Conf, exConfig.DnsConfigs[0], dnsCmHash)
+	objs := manifests.ExternalDnsResources(exConfig.Conf, exConfig.Deploy, exConfig.DnsConfigs)
 
 	fmt.Println("===================================================")
 

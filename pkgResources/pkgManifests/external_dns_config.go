@@ -44,14 +44,9 @@ var (
 
 	exampleConfigs = []configStruct{
 		{
-			Name: "full",
-			Conf: &config.Config{NS: "test-namespace", ClusterUid: clusterUid, DnsSyncInterval: time.Minute * 3},
-			Deploy: &appsv1.Deployment{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "test-externalDns-deploy",
-					UID:  "test-externalDns-deploy-uid",
-				},
-			},
+			Name:       "full",
+			Conf:       &config.Config{NS: "test-namespace", ClusterUid: clusterUid, DnsSyncInterval: time.Minute * 3, Registry: "mcr.microsoft.com"},
+			Deploy:     nil,
 			DnsConfigs: []*ExternalDnsConfig{publicDnsConfig, privateDnsConfig},
 		},
 		{
