@@ -116,8 +116,6 @@ func deployExternalDNS(ctx context.Context, p Provisioned) error {
 
 	objs := manifests.ExternalDnsResources(exConfig.Conf, exConfig.Deploy, exConfig.DnsConfigs)
 
-	fmt.Println("===================================================")
-
 	if err := p.Cluster.Deploy(ctx, objs); err != nil {
 		fmt.Println("ERROR DEPLOYING EXT DNS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
 		return logger.Error(lgr, err)
