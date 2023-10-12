@@ -110,8 +110,6 @@ func deployExternalDNS(ctx context.Context, p Provisioned) error {
 	lgr.Info("deploying external DNS onto cluster")
 	defer lgr.Info("finished deploying ext DNS")
 
-	fmt.Println("In deploy external dns >>>>>>>>>>>>>>>>>>>>")
-
 	exConfig := manifests.GetExampleConfigs()[0]
 
 	objs := manifests.ExternalDnsResources(exConfig.Conf, exConfig.Deploy, exConfig.DnsConfigs)
