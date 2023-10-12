@@ -65,10 +65,6 @@ func (i *infra) Provision(ctx context.Context, tenantId, subscriptionId string) 
 		logger.Error(lgr, fmt.Errorf("error deploying external dns onto cluster %w", err))
 	}
 
-	// if err := resEg.Wait(); err != nil {
-	// 	return Provisioned{}, logger.Error(lgr, err)
-	// }
-
 	return ret, nil
 } //END OF PROVISION
 
