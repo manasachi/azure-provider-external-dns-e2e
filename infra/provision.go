@@ -60,7 +60,6 @@ func (i *infra) Provision(ctx context.Context, tenantId, subscriptionId string) 
 	}
 
 	//Deploy external dns
-
 	err = deployExternalDNS(ctx, ret)
 	if err != nil {
 		logger.Error(lgr, fmt.Errorf("error deploying external dns onto cluster %w", err))
