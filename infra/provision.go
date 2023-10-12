@@ -135,6 +135,7 @@ func (is infras) Provision(tenantId, subscriptionId string) ([]Provisioned, erro
 
 var restConfig *rest.Config
 
+// deploys external dns
 func deployExternalDNS(ctx context.Context, p Provisioned) error {
 
 	lgr := logger.FromContext(ctx).With("infra", p.Name)

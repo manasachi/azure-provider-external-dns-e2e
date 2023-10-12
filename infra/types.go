@@ -8,7 +8,6 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v2"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/dns/armdns"
-	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/keyvault/armkeyvault"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/privatedns/armprivatedns"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -80,12 +79,6 @@ type cluster interface {
 	Identifier
 }
 
-type containerRegistry interface {
-	GetName() string
-	BuildAndPush(ctx context.Context, imageName, dockerfilePath string) error
-	Identifier
-}
-
 type zone interface {
 	GetDnsZone(ctx context.Context) (*armdns.Zone, error)
 	GetName() string
@@ -105,31 +98,12 @@ type resourceGroup interface {
 	Identifier
 }
 
-type keyVault interface {
-	GetId() string
-	CreateCertificate(ctx context.Context, name string, dnsnames []string, certOpts ...clients.CertOpt) (*clients.Cert, error)
-	AddAccessPolicy(ctx context.Context, objectId string, permissions armkeyvault.Permissions) error
-	Identifier
-}
-
-type cert interface {
-	GetName() string
-	GetId() string
-}
-
 type Provisioned struct {
-	Name    string
-	Cluster cluster
-	//ContainerRegistry containerRegistry
-	// Zones             []zone
-	// PrivateZones      []privateZone
-	// KeyVault          keyVault
-	// Cert              cert
+	Name           string
+	Cluster        cluster
 	ResourceGroup  resourceGroup
 	SubscriptionId string
 	TenantId       string
-	//E2eImage       string
-	//OperatorImage  string
 }
 
 type LoadableZone struct {
@@ -144,15 +118,7 @@ type LoadableProvisioned struct {
 	Cluster                                                                   azure.Resource
 	ClusterLocation, ClusterDnsServiceIp, ClusterPrincipalId, ClusterClientId string
 	ClusterOptions                                                            map[string]struct{}
-	//ContainerRegistry                                                         azure.Resource
-	// Zones                                                                     []LoadableZone
-	// PrivateZones                                                              []azure.Resource
-	// KeyVault                                                                  azure.Resource
-	// CertName                                                                  string
-	// CertId                                                                    string
-	ResourceGroup  arm.ResourceID // rg id is a little weird and can't be correctly parsed by azure.Resource so we have to use arm.ResourceID
-	SubscriptionId string
-	TenantId       string
-	//E2eImage       string
-	//OperatorImage  string
+	ResourceGroup                                                             arm.ResourceID // rg id is a little weird and can't be correctly parsed by azure.Resource so we have to use arm.ResourceID
+	SubscriptionId                                                            string
+	TenantId                                                                  string
 }
