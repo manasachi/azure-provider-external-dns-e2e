@@ -1,14 +1,12 @@
 package pkgManifests
 
 import (
-	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"path"
 
-	"github.com/Azure/azure-provider-external-dns-e2e/logger"
 	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/config"
 	"github.com/Azure/azure-provider-external-dns-e2e/pkgResources/util"
 
@@ -21,7 +19,6 @@ import (
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -87,7 +84,6 @@ type ExternalDnsConfig struct {
 
 // ExternalDnsResources returns Kubernetes objects required for external dns
 func ExternalDnsResources(conf *config.Config, self *appsv1.Deployment, externalDnsConfigs []*ExternalDnsConfig) []client.Object {
-	fmt.Println("In beginning of ExternalDNSResources function +++++++++++++++++++++++++++")
 	var objs []client.Object
 
 	// Can safely assume the namespace exists if using kube-system
@@ -109,36 +105,22 @@ func ExternalDnsResources(conf *config.Config, self *appsv1.Deployment, external
 
 func externalDnsResourcesFromConfig(conf *config.Config, externalDnsConfig *ExternalDnsConfig) []client.Object {
 
-	ctx := context.Background()
-	lgr := logger.FromContext(ctx)
-
-	fmt.Println("In externalDnsResourcesFromConfig >>>>>>>>>>>>>>>>>>>>>>>>>>")
 	var objs []client.Object
 	objs = append(objs, newExternalDNSServiceAccount(conf, externalDnsConfig))
 	objs = append(objs, newExternalDNSClusterRole(conf, externalDnsConfig))
 	objs = append(objs, newExternalDNSClusterRoleBinding(conf, externalDnsConfig))
 
-	fmt.Println("Appending 3 objs to array  >>>>>>>>>>>>>>>>>>>>>>>>>>")
-	fmt.Println("objs: %w", objs)
-
 	dnsCm, dnsCmHash := NewExternalDNSConfigMap(conf, externalDnsConfig)
 	objs = append(objs, dnsCm)
 	deployment := newExternalDNSDeployment(conf, externalDnsConfig, dnsCmHash)
-	fmt.Println("The deployment returned from fn ----------------------->")
-	fmt.Println("deployment: %w", deployment)
-	lgr.Info("deployment: %w", deployment)
-	objs = append(objs, deployment)
 
-	fmt.Println("Appending 2 objs to array: config map and deployment  >>>>>>>>>>>>>>>>>>>>>>>>>>")
-	fmt.Println("objs: %w", objs)
+	objs = append(objs, deployment)
 
 	for _, obj := range objs {
 		l := util.MergeMaps(obj.GetLabels(), externalDnsConfig.Provider.Labels())
 		obj.SetLabels(l)
 	}
 
-	fmt.Println("about to return objs")
-	fmt.Println("objs: %w", objs)
 	return objs
 }
 
