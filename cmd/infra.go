@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Azure/azure-provider-external-dns-e2e/infra"
 	"github.com/spf13/cobra"
+
+	"github.com/Azure/azure-provider-external-dns-e2e/infra"
 )
 
 func init() {
@@ -16,6 +17,7 @@ func init() {
 	rootCmd.AddCommand(infraCmd)
 }
 
+// Infra Command sets provisions infrastructure and saves the configuration to an infrastructure configuration file
 var infraCmd = &cobra.Command{
 	Use:   "infra",
 	Short: "Sets up infrastructure for e2e tests",
@@ -53,7 +55,6 @@ var infraCmd = &cobra.Command{
 		if _, err := file.Write(bytes); err != nil {
 			return fmt.Errorf("writing infrastructure config: %w", err)
 		}
-		fmt.Println("finished writing infrastructure config")
 
 		return nil
 	},

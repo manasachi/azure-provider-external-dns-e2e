@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Azure/azure-provider-external-dns-e2e/logger"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources"
+
+	"github.com/Azure/azure-provider-external-dns-e2e/logger"
 )
 
 type rg struct {
@@ -18,6 +19,7 @@ type rg struct {
 
 type RgOpt func(rg *armresources.ResourceGroup) error
 
+// Used for testing purposes: deletes resource group after specified duration
 func DeleteAfterOpt(d time.Duration) RgOpt {
 	return func(rg *armresources.ResourceGroup) error {
 		if rg.Tags == nil {
@@ -31,6 +33,7 @@ func DeleteAfterOpt(d time.Duration) RgOpt {
 	}
 }
 
+// Called when loading provisioned infrastructure from .json file, returns an rg struct
 func LoadRg(id arm.ResourceID) *rg {
 	return &rg{
 		id:   id.String(),
@@ -38,13 +41,14 @@ func LoadRg(id arm.ResourceID) *rg {
 	}
 }
 
+// Creates a new resource group with specified options vis rgOpts. Location used by all resources is specified in infra > infras.go
 func NewResourceGroup(ctx context.Context, subscriptionId, name, location string, rgOpts ...RgOpt) (*rg, error) {
 	lgr := logger.FromContext(ctx).With("name", name, "location", location, "subscriptionId", subscriptionId)
 	ctx = logger.WithContext(ctx, lgr)
 	lgr.Info("starting to create resource group")
 	defer lgr.Info("finished creating resource group")
 
-	cred, err := getAzCred()
+	cred, err := GetAzCred()
 	if err != nil {
 		return nil, fmt.Errorf("getting az credentials: %w", err)
 	}

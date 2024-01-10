@@ -4,13 +4,15 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Azure/azure-provider-external-dns-e2e/logger"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/dns/armdns"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/privatedns/armprivatedns"
 	"github.com/Azure/go-autorest/autorest/azure"
+
+	"github.com/Azure/azure-provider-external-dns-e2e/logger"
 )
 
+// zone and private zone types make loading provisioned infra from .json file easier
 type zone struct {
 	name           string
 	subscriptionId string
@@ -32,6 +34,7 @@ type ZoneOpt func(z *armdns.Zone) error
 // PrivateZoneOpt specifies what kind of private zone to create
 type PrivateZoneOpt func(z *armprivatedns.PrivateZone) error
 
+// Called to create Provisioned object from .json file
 func LoadZone(id azure.Resource, nameservers []string) *zone {
 	return &zone{
 		id:             id.String(),
@@ -42,6 +45,7 @@ func LoadZone(id azure.Resource, nameservers []string) *zone {
 	}
 }
 
+// Returns a private or public zone (based on zoneOpts) with the given name, creates and returns zone struct or an error if one occurred
 func NewZone(ctx context.Context, subscriptionId, resourceGroup, name string, zoneOpts ...ZoneOpt) (*zone, error) {
 	name = nonAlphanumericRegex.ReplaceAllString(name, "")
 	name = name + ".com"
@@ -51,7 +55,7 @@ func NewZone(ctx context.Context, subscriptionId, resourceGroup, name string, zo
 	lgr.Info("starting to create zone")
 	defer lgr.Info("finished creating zone")
 
-	cred, err := getAzCred()
+	cred, err := GetAzCred()
 	if err != nil {
 		return nil, fmt.Errorf("getting az credentials: %w", err)
 	}
@@ -70,6 +74,7 @@ func NewZone(ctx context.Context, subscriptionId, resourceGroup, name string, zo
 			return nil, fmt.Errorf("applying zone option: %w", err)
 		}
 	}
+
 	resp, err := factory.NewZonesClient().CreateOrUpdate(ctx, resourceGroup, name, *z, nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating zone: %w", err)
@@ -107,13 +112,14 @@ func NewZone(ctx context.Context, subscriptionId, resourceGroup, name string, zo
 	}, nil
 }
 
+// Returns dns zone from provisioned zone struct, with an error if one occurs
 func (z *zone) GetDnsZone(ctx context.Context) (*armdns.Zone, error) {
 	lgr := logger.FromContext(ctx).With("name", z.name, "subscriptionId", z.subscriptionId, "resourceGroup", z.resourceGroup)
 	ctx = logger.WithContext(ctx, lgr)
 	lgr.Info("starting to get dns")
 	defer lgr.Info("finished getting dns")
 
-	cred, err := getAzCred()
+	cred, err := GetAzCred()
 	if err != nil {
 		return nil, fmt.Errorf("getting az credentials: %w", err)
 	}
@@ -143,6 +149,7 @@ func (z *zone) GetId() string {
 	return z.id
 }
 
+// Loads provisioned private zone, used to convert .json saved to infrastructure file to a Provisioned object
 func LoadPrivateZone(id azure.Resource) *privateZone {
 	return &privateZone{
 		id:             id.String(),
@@ -152,6 +159,7 @@ func LoadPrivateZone(id azure.Resource) *privateZone {
 	}
 }
 
+// Creates a private zone used in testing
 func NewPrivateZone(ctx context.Context, subscriptionId, resourceGroup, name string, opts ...PrivateZoneOpt) (*privateZone, error) {
 	name = nonAlphanumericRegex.ReplaceAllString(name, "")
 	name = name + ".com"
@@ -161,7 +169,7 @@ func NewPrivateZone(ctx context.Context, subscriptionId, resourceGroup, name str
 	lgr.Info("starting to create private zone")
 	defer lgr.Info("finished creating private zone")
 
-	cred, err := getAzCred()
+	cred, err := GetAzCred()
 	if err != nil {
 		return nil, fmt.Errorf("getting az credentials: %w", err)
 	}
@@ -210,13 +218,14 @@ func (p *privateZone) GetName() string {
 	return p.name
 }
 
+// Retrieves provisioned Private dns zone
 func (p *privateZone) GetDnsZone(ctx context.Context) (*armprivatedns.PrivateZone, error) {
 	lgr := logger.FromContext(ctx).With("name", p.name, "subscriptionId", p.subscriptionId, "resourceGroup", p.resourceGroup)
 	ctx = logger.WithContext(ctx, lgr)
 	lgr.Info("starting to get private dns")
 	defer lgr.Info("finished getting private dns")
 
-	cred, err := getAzCred()
+	cred, err := GetAzCred()
 	if err != nil {
 		return nil, fmt.Errorf("getting az credentials: %w", err)
 	}
@@ -234,6 +243,7 @@ func (p *privateZone) GetDnsZone(ctx context.Context) (*armprivatedns.PrivateZon
 	return &resp.PrivateZone, nil
 }
 
+// Creates a virtual network link for new private dns zone
 func (p *privateZone) LinkVnet(ctx context.Context, linkName, vnetId string) error {
 	linkName = nonAlphanumericRegex.ReplaceAllString(linkName, "")
 	linkName = truncate(linkName, 80)
@@ -243,7 +253,7 @@ func (p *privateZone) LinkVnet(ctx context.Context, linkName, vnetId string) err
 	lgr.Info("starting to link vnet")
 	defer lgr.Info("finished linking vnet")
 
-	cred, err := getAzCred()
+	cred, err := GetAzCred()
 	if err != nil {
 		return fmt.Errorf("getting az credentials: %w", err)
 	}
