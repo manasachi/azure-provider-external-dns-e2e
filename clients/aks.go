@@ -27,6 +27,7 @@ var (
 )
 
 // aks struct contains properties of the provisioned cluster. This struct is loaded from the infrastructure file
+// comment
 type aks struct {
 	name, subscriptionId, resourceGroup string
 	id                                  string
