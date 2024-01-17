@@ -10,7 +10,7 @@ env:
 
 jobs:
   e2eV2:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
     uses: ./.github/workflows/e2ev2-matrix.yaml
     secrets: inherit
   status:
