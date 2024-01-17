@@ -42,7 +42,7 @@ jobs:
 
       - name: Ensure ref
         uses: actions/github-script@v6
-        if: ${{ !(inputs.skipRefCheck) }}
+        if: ${{ inputs.skipRefCheck }}
         with:
             script: core.setFailed('Ref is not latest')
   test:
