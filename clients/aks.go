@@ -21,6 +21,7 @@ import (
 	"github.com/Azure/azure-provider-external-dns-e2e/manifests"
 )
 
+// commment
 var (
 	workloadKinds   = []string{"Deployment", "StatefulSet", "DaemonSet"}
 	nonZeroExitCode = errors.New("non-zero exit code")
