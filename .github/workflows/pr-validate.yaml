@@ -34,7 +34,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            if ${{ github.event_name }} == 'pull_request' {
+            if ${{ github.event_name }} == "pull_request" {
               const url = `${process.env.server_url}/${process.env.repo}/actions/runs/${process.env.run_id}`
               const { data: pull } = await github.rest.pulls.get({
                 ...context.repo,
