@@ -34,7 +34,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const context = github.context;
             if (context.eventName == 'schedule') {
               const url = `${process.env.server_url}/${process.env.repo}/actions/runs/${process.env.run_id}`
               const { data: result } = await github.rest.checks.create({
