@@ -1,5 +1,7 @@
 name: Validate PR --
 on:
+  schedule:
+    - cron: '*/5 * * * *'
   push:
     branches: [ main ]
   pull_request:
@@ -57,7 +59,6 @@ jobs:
               const { data: result } = await github.rest.checks.create({
                 ...context.repo,
                 name: process.env.validate_job_name,
-                head_sha: github.context.sha,
                 status: 'completed',
                 conclusion: process.env.conclusion,
                 details_url: url,
