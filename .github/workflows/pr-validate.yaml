@@ -34,6 +34,20 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            if (context.eventName == 'schedule') {
+              const url = `${process.env.server_url}/${process.env.repo}/actions/runs/${process.env.run_id}`
+              const ref = github.context.sha
+              const { data: result } = await github.rest.checks.create({
+                ...context.repo,
+                name: process.env.validate_job_name,
+                head_sha: ref,
+                status: 'completed',
+                conclusion: process.env.conclusion,
+                details_url: url,
+              });
+              console.log('created check')
+              return result;
+            } 
             if (context.eventName == 'pull_request') {
               const url = `${process.env.server_url}/${process.env.repo}/actions/runs/${process.env.run_id}`
               const { data: pull } = await github.rest.pulls.get({
