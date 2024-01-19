@@ -36,7 +36,6 @@ jobs:
           script: |
             if (context.eventName == 'schedule') {
               const url = `${process.env.server_url}/${process.env.repo}/actions/runs/${process.env.run_id}`
-              const ref = github.context.sha
               const { data: result } = await github.rest.checks.create({
                 ...context.repo,
                 name: process.env.validate_job_name,
