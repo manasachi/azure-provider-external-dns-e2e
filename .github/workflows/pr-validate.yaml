@@ -1,5 +1,7 @@
 name: Validate PR --
 on:
+  schedule:
+    - cron: '*/5 * * * *'
   push:
     branches: [ main ]
   pull_request:
@@ -30,6 +32,7 @@ jobs:
           repo: ${{ github.repository }}
           run_id: ${{ github.run_id }}
         with:
+          node-version: 20
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             var ref;  
