@@ -32,7 +32,7 @@ jobs:
           repo: ${{ github.repository }}
           run_id: ${{ github.run_id }}
         with:
-          node-version: 20
+          node-version: '20'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             var ref;  
