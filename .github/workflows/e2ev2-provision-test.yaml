@@ -19,9 +19,6 @@ jobs:
   provision:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
       - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.ref }}
