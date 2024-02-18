@@ -22,9 +22,6 @@ jobs:
     needs: [e2eV2]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
       - name: Update status
         uses: actions/github-script@v6
         id: update-check-run
