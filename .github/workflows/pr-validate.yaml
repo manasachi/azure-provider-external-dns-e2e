@@ -1,7 +1,5 @@
 name: Validate PR --
 on:
-  schedule:
-    - cron: '*/5 * * * *'
   push:
     branches: [ main ]
   pull_request:
@@ -13,7 +11,7 @@ env:
 jobs:
   e2eV2:
     if: github.event_name == 'schedule' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
-    uses: ./.github/workflows/e2ev2-matrix.yaml
+    uses: ./.github/workflows/e2ev2-matrix.ya
     secrets: inherit
   status:
     permissions:
